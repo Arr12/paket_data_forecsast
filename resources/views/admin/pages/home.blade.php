@@ -1,5 +1,11 @@
 @extends('admin.layouts.app')
-
+@php
+    $ygt = $ygt ?? 1000000;
+    $mgt = $mgt ?? 300000;
+    $dgt = $dgt ?? 60000;
+    $month = $month ?? ["Labels"];
+    $month_total = $month_total ?? [1000000, 5000000, 6000000 ,8000000];
+@endphp
 @push('before-style')
 @endpush
 @push('after-style')
@@ -21,114 +27,92 @@
 
 <!-- Sparkline Chart Plugin Js -->
 <script src="/plugins/jquery-sparkline/jquery.sparkline.js"></script>
+<script>
+    var ctx = $("#myChart");
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($month) !!},
+            datasets: [{
+                label: 'Data Pendapatan Tahun ini',
+                data: {!! json_encode($month_total) !!},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true,
+                        max: 100000000
+                    }
+                }]
+            }
+        }
+    });
+</script>
 @endpush
 
 @section('content')
 <div class="block-header">
     <h2>HOME</h2>
 </div>
-<div class="row clearfix">
-    <!-- Answered Tickets -->
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <div class="card">
-            <div class="body bg-teal">
-                <div class="font-bold m-b--35">DAILY IMPORTED DATA OFFICER</div>
-                <ul class="dashboard-stat-list">
-                    <li></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <!-- #END# Answered Tickets -->
-</div>
-
-{{-- <div class="row clearfix">
-    <!-- Task Info -->
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <div class="card">
-            <div class="header">
-                <h2>TASK SCHEDULAR</h2>
-                <ul class="header-dropdown m-r--5">
-                    <li class="dropdown">
-                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="material-icons">more_vert</i>
-                        </a>
-                        <ul class="dropdown-menu pull-right">
-                            <li><a href="javascript:void(0);">Action</a></li>
-                            <li><a href="javascript:void(0);">Another action</a></li>
-                            <li><a href="javascript:void(0);">Something else here</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <div class="body">
-                <div class="table-responsive">
-                    <table class="table table-hover dashboard-task-infos">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Task</th>
-                                <th>Interval</th>
-                                <th>Description</th>
-                                <th>Next Due</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Task Daily Update</td>
-                                <td><span class="label bg-green">Off</span></td>
-                                <td>The Task will otomatic update daily report every officer</td>
-                                <td>{{date('Y-m-d 01:00:00', strtotime('+1 day'))}}</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Task Team Monitoring Global</td>
-                                <td><span class="label bg-blue">Active</span></td>
-                                <td>John Doe</td>
-                                <td>{{date('Y-m-d 01:00:00', strtotime('-1 days +1 weeks'))}}</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Task C</td>
-                                <td><span class="label bg-light-blue">On Hold</span></td>
-                                <td>John Doe</td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-light-blue" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" style="width: 72%"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Task D</td>
-                                <td><span class="label bg-orange">Wait Approvel</span></td>
-                                <td>John Doe</td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-orange" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100" style="width: 95%"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Task E</td>
-                                <td>
-                                    <span class="label bg-red">Suspended</span>
-                                </td>
-                                <td>John Doe</td>
-                                <td>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-red" role="progressbar" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100" style="width: 87%"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+<div class="container">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="card" style="display: grid; padding: 20px;">
+            <div class="row">
+                <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="d-flex w-100 card" style="height: 120px; background-color: #bdb1ff;">
+                        <div style="width: 30%; background-color: #8479c29c; height: 100%; text-align: center;">
+                            <i style="font-size: 46px; font-weight: bold !important; margin-top: 35px; color: #fff;" class="material-icons">money</i>
+                        </div>
+                        <div style="background-color: #bdb1ff;">
+                            <h2 style="margin-left: 20px; font-size: 24px; margin-top:20px; font-weight: bold !important; color: #fff;">Tahunan</h2>
+                            <p style="margin-left: 20px; margin-top: 20px; font-size: 24px; font-weight: bold !important; color: #fff;">{{formatRupiah($ygt)}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="d-flex w-100 card" style="height: 120px; background-color: #bdb1ff;">
+                        <div style="width: 30%; background-color: #8479c29c; height: 100%; text-align: center;">
+                            <i style="font-size: 46px; font-weight: bold !important; margin-top: 35px; color: #fff;" class="material-icons">money                            </i>
+                        </div>
+                        <div style="background-color: #bdb1ff;">
+                            <h2 style="margin-left: 20px; font-size: 24px; margin-top:20px; font-weight: bold !important; color: #fff;">Bulanan</h2>
+                            <p style="margin-left: 20px; margin-top: 20px; font-size: 24px; font-weight: bold !important; color: #fff;">{{formatRupiah($mgt)}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4">
+                    <div class="d-flex w-100 card" style="height: 120px; background-color: #bdb1ff;">
+                        <div style="width: 30%; background-color: #8479c29c; height: 100%; text-align: center;">
+                            <i style="font-size: 46px; font-weight: bold !important; margin-top: 35px; color: #fff;" class="material-icons">money                            </i>
+                        </div>
+                        <div style="background-color: #bdb1ff;">
+                            <h2 style="margin-left: 20px; font-size: 24px; margin-top:20px; font-weight: bold !important; color: #fff;">Harian</h2>
+                            <p style="margin-left: 20px; margin-top: 20px; font-size: 24px; font-weight: bold !important; color: #fff;">{{formatRupiah($dgt)}}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <canvas id="myChart"></canvas>
         </div>
     </div>
-    <!-- #END# Task Info -->
-</div> --}}
+</div>
 @endsection

@@ -8,7 +8,7 @@
             </a>
             <a href="javascript:void(0);" class="bars">
             </a>
-            <a class="navbar-brand" href="#">Internal Reports App</a>
+            <a class="navbar-brand" href="#">E - Forecasting App</a>
         </div>
     </div>
 </nav>

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="csrf-token" content="{!! csrf_token() !!}">
-    <title>Welcome To | Internal Report</title>
+    <title>Welcome To | E - Forecast</title>
     <!-- Favicon-->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
@@ -41,9 +41,11 @@
 
     <!-- Bootstrap Select Css -->
     <link href="/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+    <link href="/plugins/sweetalert2/package/dist/sweetalert2.min.css" rel="stylesheet">
 
     <!-- Custom Css -->
     <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/custom.css" rel="stylesheet">
 
     <!-- Customize themes -->
     <link href="/css/themes/all-themes.css" rel="stylesheet" />
@@ -170,7 +172,9 @@
     <script src="/plugins/autosize/autosize.js"></script>
     <script src="/js/pages/forms/basic-form-elements.js"></script>
 
-    @stack('after-script')
+    {{-- Chart JS --}}
+    <script src="/plugins/chartjs/Chart.js"></script>
+    <script src="/plugins/sweetalert2/package/dist/sweetalert2.all.min.js"></script>
 
     <script>
         function createSkeleton(limit){
@@ -197,10 +201,25 @@
             }
         });
     </script>
+
     <!-- Custom Js -->
     <script src="/js/admin.js"></script>
 
     <!-- Demo Js -->
     <script src="/js/demo.js"></script>
+
+    <!-- Jquery DataTable Plugin Js -->
+    <script src="/plugins/jquery-datatable/jquery.dataTables.js"></script>
+    <script src="/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script src="/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+    <script src="/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    <script src="/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+    <script src="/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+    <script src="/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+    <script src="/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+    <script src="/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+    <script src="/plugins/sweetalert2/package/dist/sweetalert2.all.min.js"></script>
+
+    @stack('after-script')
 </body>
 </html>

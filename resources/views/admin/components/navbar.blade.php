@@ -34,8 +34,8 @@
         <div class="menu">
             <ul class="list">
                 <li class="header">MAIN NAVIGATION</li>
-                <li>
-                    <a href="/">
+                <li class={{ set_active('home') }}>
+                    <a href="{{route('dashboard')}}">
                         <i class="material-icons">home</i>
                         <span>Home</span>
                     </a>
@@ -46,33 +46,38 @@
                         <span>Data Master</span>
                     </a>
                     <ul class="ml-menu">
-                        <li>
-                            <a href="/master-provider">
+                        <li class={{ set_active('master-provider') }}>
+                            <a href="{{route('master-provider')}}">
                                 <span>Master Provider</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="/master-user">
+                        <li class={{ set_active('master-barang') }}>
+                            <a href="{{route('master-barang')}}">
+                                <span>Master Barang</span>
+                            </a>
+                        </li>
+                        <li class={{ set_active('master-user') }}>
+                            <a href="{{route('master-user')}}">
                                 <span>Master User</span>
                             </a>
                         </li>
                     </ul>
                 </li>
-                <li>
-                    <a href="/transaksi">
-                        <i class="material-icons">import_contacts</i>
+                <li class={{ set_active('transaksi') }}>
+                    <a href="{{route('transaksi')}}">
+                        <i class="material-icons">paid</i>
                         <span>Transaksi</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/forecasting">
-                        <i class="material-icons">import_contacts</i>
+                <li class={{ set_active('forecasting') }}>
+                    <a href="{{route('forecasting')}}">
+                        <i class="material-icons">trending_up</i>
                         <span>Forecasting</span>
                     </a>
                 </li>
-                <li>
-                    <a href="/laporan">
-                        <i class="material-icons">import_contacts</i>
+                <li class={{ set_active('laporan') }}>
+                    <a href="{{route('laporan')}}">
+                        <i class="material-icons">task_alt</i>
                         <span>Laporan</span>
                     </a>
                 </li>
