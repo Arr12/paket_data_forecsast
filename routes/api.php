@@ -32,6 +32,7 @@ Route::prefix('/transaction')->name('api.transaction.')->group(function(){
     Route::get('/get-transaction-split', [TransactionsController::class, 'DataTransactionSplit'])->name('get-transaction-split');
     Route::post('/split-transaction', [TransactionsController::class, 'UpdateTransaction'])->name('post-split-transaction');
     Route::post('/post-transaction', [TransactionsController::class, 'PostTransaction'])->name('post-transaction');
+    Route::post('/post-transaction-detail', [TransactionsController::class, 'PostTransaction'])->name('post-transaction-detail');
     Route::post('/delete-transaction', [TransactionsController::class, 'DeleteTransaction'])->name('delete-transaction');
 });
 Route::prefix('/data-master')->name('api.forecasting.')->group(function(){
