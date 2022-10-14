@@ -7,8 +7,8 @@
                 <img src="/images/user.png" width="48" height="48" alt="User" />
             </div>
             <div class="info-container">
-                <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administrator</div>
-                <div class="email">Administrator</div>
+                <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{auth()->user()->name}}</div>
+                <div class="email">{{auth()->user()->email}}</div>
                 <div class="btn-group user-helper-dropdown">
                     <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                     <ul class="dropdown-menu pull-right">
@@ -19,11 +19,7 @@
                         <li><a href="javascript:void(0);"><i class="material-icons">favorite</i>Likes</a></li>
                         <li role="separator" class="divider"></li> --}}
                         <li>
-                            <!-- Authentication -->
-                            <form method="POST" action="">
-                                @csrf
-                                <button class="sign-out" type="submit"><i class="material-icons">input</i>Sign Out</button>
-                            </form>
+                            <a class="sign-out" href="{{route('actionlogout')}}"><i class="material-icons">input</i>Sign Out</a>
                         </li>
                     </ul>
                 </div>
@@ -73,6 +69,12 @@
                     <a href="{{route('forecasting')}}">
                         <i class="material-icons">trending_up</i>
                         <span>Forecasting</span>
+                    </a>
+                </li>
+                <li class={{ set_active('pemesanan') }}>
+                    <a href="{{route('pemesanan')}}">
+                        <i class="material-icons">local_shipping</i>
+                        <span>Pemesanan dan Stok</span>
                     </a>
                 </li>
                 <li class={{ set_active('laporan') }}>
