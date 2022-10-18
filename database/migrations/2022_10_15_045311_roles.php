@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class TTransaksi extends Migration
+class Roles extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class TTransaksi extends Migration
      */
     public function up()
     {
-        Schema::create('t_transaksi', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->double('qty', 6, 2);
-            $table->double('sell_price', 15, 2);
-            $table->enum('type', ['pulsa', 'paket_data'])->default('pulsa');
-            $table->enum('status', ['actived', 'deleted', 'split', 'done'])->default('actived');
+            $table->string('name', 100);
+            $table->string('slug', 100);
+            $table->string('desc', 100);
+            $table->enum('status', ['actived', 'deleted'])->default('actived');
             $table->timestamps();
         });
     }

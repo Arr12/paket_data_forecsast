@@ -19,29 +19,16 @@
 @endpush
 @push('after-script')
 <script>
-    let Tabel = function(url, type) {
-        if(type === 'transaction'){
-            var total = 'grand_total';
-            var name = 'TabelTransaction';
-            var tab = 'FormTabel';
-            var col = 'data-column';
-        }
-        else if(type === 'split'){
-            var total = 'grand_total_split';
-            var name = 'TabelTransactionSplit';
-            var tab = 'FormTabelSplit';
-            var col = 'data-column-split';
-        }
-        $('#' + tab).html(createSkeleton(1));
+    let TabelStock = function(url) {
+        $('#FormTabelStock').html(createSkeleton(1));
         $.ajax({
             url: url,
             dataType: "json",
             success: function(json) {
-                $('#' + tab).html(
+                $('#FormTabelStock').html(
                     "<table id='"+ name +"' class='table table-bordered table-striped table-hover'></table>"
                 );
                 $("#" + total).html(json.property[0].total);
-                console.log(json.property[0]);
                 $('#' + name).DataTable(json);
                 let arr = [];
                 for (let i = 1; i < json.columns.length; i++) {
@@ -77,7 +64,6 @@
                     }
                     // Get the column API object
                     let column = table.column($(this).attr(col));
-                    console.log(column);
 
                     // Toggle the visibility
                     column.visible(!column.visible());
@@ -86,54 +72,33 @@
         });
     }
     $(document).ready(function(){
-        let type = '';
-        Tabel("{{route('api.transaction.get-transaction')}}", 'transaction');
-        Tabel("{{route('api.transaction.get-transaction-split')}}", 'split');
-        $('#add_transaksi_pulsa').on('click', function(){
-            $("#form_add_transaksi_pulsa").show();
-            $("#form_add_transaksi_paket").hide();
-            var provider = '';
-            $.ajax({
-                url: '{{$provider}}',
-                type: 'GET',
-                dataType: 'json',
-                success: function(json) {
-                    provider += "<label for='provider_select'>Provider</label><select type='text' id='provider_select'><option value=''>Pilih Provider</option>";
-                    json.data.map(function(val, index){
-                        provider += "<option value='"+ val[2] +"'>"+ val[2] +"</option>";
-                    });
-                    provider += "</select>";
-                    $("#provider").html(provider);
-                    $("#provider_select").addClass("form-control");
-                }
-            });
-            type = 'pulsa';
+        TabelStock("{{route('api.stock.get-stock')}}");
+        var barang = '';
+        $.ajax({
+            url: "{{route('api.forecasting.get-barang')}}",
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                barang += "<label for='barang_select'>Barang</label><select type='text' id='barang_select'><option value=''>Pilih Barang</option>";
+                json.data.map(function(val, index){
+                    barang += "<option value='"+ val[1] + "," + val[5] + "'>"+ val[2] +"</option>";
+                });
+                barang += "</select>";
+                $("#barang").html(barang);
+                $("#barang_select").addClass("form-control");
+            }
         });
-        $("#add_transaksi_paket").on('click', function(){
-            $("#form_add_transaksi_pulsa").hide();
-            $("#form_add_transaksi_paket").show();
-            var paket_data = '';
-            $.ajax({
-                url: '{{$paket_data}}',
-                type: 'GET',
-                dataType: 'json',
-                success: function(json) {
-                    paket_data += "<label for='paket_data_select'>Paket Data</label><select type='text' id='paket_data_select'><option value=''>Pilih Paket Data</option>";
-                    json.data.map(function(val, index){
-                        paket_data += "<option value='"+ val[2] +","+ val[5] +"'>"+ val[2] +"</option>";
-                    });
-                    paket_data += "</select>";
-                    $("#paket_data").html(paket_data);
-                    $("#paket_data_select").addClass("form-control");
-                    $("#paket_data_select").change(function(){
-                        var x = $(this).val().split(",");
-                        $("#nominal_paket_data").val(x[1]);
-                    });
-                }
-            });
-            type = 'paket_data';
+        $(document).change('#barang_select', function(){
+            var barang = $(this).val();
+            $("#harga").val(barang[1]);
         });
-        $("#btn_add_transaction").click(function(){
+        $(document).on('click', '#btn_calculate', function(){
+            var qty = $("#qty").val();
+            var harga = $("#harga").val();
+            var total = qty * harga;
+            $("#total").val(formatRupiah(total, undefined));
+        });
+        $("#btn_add").click(function(){
             Swal.fire({
                 title: 'Do you want to save the changes?',
                 showCancelButton: true,
@@ -141,7 +106,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     if(type === 'pulsa'){
-                        var name = $("#no_hp").val() + " (" + $("#provider_select").val() + ")";
+                        var name = $("#no_hp").val() + " (" + $("#barang_select").val() + ")";
                         var nominal = $("#nominal").val();
                         var qty = 1;
                     }
@@ -170,7 +135,7 @@
                 }
             });
         });
-        $(document).on('click', '#delete_transaction', function(){
+        $(document).on('click', '#delete_pemesanan', function(){
             var id = $(this).attr('data-id');
             Swal.fire({
                 title: 'Do you want to delete the changes?',
@@ -179,7 +144,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{{route('api.transaction.delete-transaction')}}",
+                        url: "",
                         type: 'POST',
                         data: {
                             "_token": "{{ csrf_token() }}",
@@ -206,7 +171,6 @@
                 success: function(json){
                     Swal.fire('Splited!', '', 'success');
                     Tabel("{{route('api.transaction.get-transaction')}}", 'transaction');
-                    Tabel("{{route('api.transaction.get-transaction-split')}}", 'split');
                 }
             });
         });
@@ -218,61 +182,62 @@
     <h2>PEMESANAN DAN STOK</h2>
 </div>
 <div class="row clearfix">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="card">
+            <div class="header">
+                <h2>Tabel Stok</h2>
+                <ul class="header-dropdown m-r--5">
+                    <li class="dropdown">
+                        <button style="display:none;" id='setDataDailyB' class="btn waves-effect btn-primary" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="material-icons">save</i> Export Periode Report
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="body">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <p>Hide column:</p>
+                        <div id="data-column-stock"></div>
+                    </div>
+                </div>
+                <div class="table-responsive" id="FormTabelStock"></div>
+            </div>
+        </div>
+    </div>
     <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
         <div class="card">
             <div class="header">
-                <h2>Input Pemesanan</h2>
+                <h2>Input Stok</h2>
             </div>
             <div class="body">
                 <div class="row clearfix">
                     <div id="alert"></div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="barang"></div>
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        {{-- <button class="btn btn-success btn-block waves-effect" id="btn_transaksi_tersimpan" data-toggle="modal" data-target="#modalTransaksiTersimpan">
-                            <i class="material-icons">edit</i> Buka Transaksi Tersimpan
-                        </button> --}}
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <a id="add_transaksi_pulsa">
-                            <div class="info-box bg-cyan hover-expand-effect" style="cursor: pointer;">
-                                <div class="icon">
-                                    <i class="material-icons">save</i>
-                                </div>
-                                <div class="content">
-                                    <div class="text">Pulsa</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <a id="add_transaksi_paket">
-                            <div class="info-box bg-cyan hover-expand-effect" style="cursor: pointer;">
-                                <div class="icon">
-                                    <i class="material-icons">save</i>
-                                </div>
-                                <div class="content">
-                                    <div class="text">Paket Data</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row" id="form_add_transaksi_pulsa" style="display: none;">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="barang"></div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                             <label for="qty">Qty</label>
-                            <input type="text" id="qty" class="form-control" placeholder="Ketik nominal pulsa" />
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="harga">Harga</label>
-                            <input type="text" id="harga" class="form-control" placeholder="Ketik nomer handphone" />
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                            <label for="total">Total</label>
-                            <input type="text" id="total" class="form-control" placeholder="Ketik nomer handphone" disabled />
-                        </div>
+                        <label for="qty">Qty</label>
+                        <input type="text" id="qty" class="form-control" placeholder="Ketik Qty" required />
                     </div>
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <button class="btn btn-primary btn-block waves-effect" type='button' id="btn_add_transaction">
-                            <i class="material-icons">add</i> Add Pemesanan
+                        <label for="harga">Harga Beli</label>
+                        <input type="text" id="harga" class="form-control" placeholder="Ketik Harga" />
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <label for="harga_jual">Harga Jual</label>
+                        <input type="text" id="harga_jual" class="form-control" placeholder="Ketik Harga Jual" />
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <button class="btn btn-danger btn-block waves-effect" id="btn_calculate">
+                            <i class="material-icons">sync</i> Calculate
+                        </button>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <label for="total">Total</label>
+                        <input type="text" id="total" class="form-control" placeholder="Ketik Total" disabled />
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <button class="btn btn-primary btn-block waves-effect" id="btn_add_data">
+                            <i class="material-icons">add</i> Add Data
                         </button>
                     </div>
                 </div>
@@ -282,7 +247,7 @@
     <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
         <div class="card">
             <div class="header">
-                <h2>Tabel Transaksi</h2>
+                <h2>Tabel Pemesanan</h2>
                 <ul class="header-dropdown m-r--5">
                     <li class="dropdown">
                         <button style="display:none;" id='setDataDailyB' class="btn waves-effect btn-primary" role="button" aria-haspopup="true" aria-expanded="false">
@@ -308,39 +273,15 @@
                 </table>
                 <div class="row" style="margin-top: 24px;">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <button class="btn btn-primary btn-block waves-effect" id="btn_done_transaction" data-toggle="modal" data-target="#modalTransaksiTersimpan">
+                        <label for="faktur">No. Faktur</label>
+                        <input type="text" id="faktur" class="form-control" placeholder="Ketik Faktur" />
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <button class="btn btn-primary btn-block waves-effect" id="btn_done_transaction" data-toggle="modal" data-target="#modalPemesananTersimpan">
                             <i class="material-icons">done_all</i> Selesai
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="header">
-                <h2>Split Transaksi</h2>
-                <ul class="header-dropdown m-r--5">
-                    <li class="dropdown">
-                        <button style="display:none;" id='setDataDailyB' class="btn waves-effect btn-primary" role="button" aria-haspopup="true" aria-expanded="false">
-                            <i class="material-icons">save</i> Export Periode Report
-                        </button>
-                    </li>
-                </ul>
-            </div>
-            <div class="body">
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <p>Hide column:</p>
-                        <div id="data-column-split"></div>
-                    </div>
-                </div>
-                <div class="table-responsive" id="FormTabelSplit"></div>
-                <table style="width: 30%;">
-                    <tr>
-                        <td>Grand Total</td>
-                        <td>:</td>
-                        <td id="grand_total_column"></td>
-                    </tr>
-                </table>
             </div>
         </div>
     </div>

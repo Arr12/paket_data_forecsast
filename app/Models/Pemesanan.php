@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Stock extends Model
+class Pemesanan extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = 't_stok';
+    protected $table = 't_pemesanan';
 
-    public function barang(Type $var = null)
+    public function details()
     {
-        $this->belongsTo(DataBarangModel::class, 'id_barang');
+        return $this->belongsTo(DetailPemesanan::class, 'details_id');
     }
 }

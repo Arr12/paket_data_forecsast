@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/master-provider', [Controller::class, 'MasterProviderIndex'])->name('master-provider');
     Route::get('/master-barang', [Controller::class, 'MasterBarangIndex'])->name('master-barang');
     Route::get('/master-user', [Controller::class, 'MasterUserIndex'])->name('master-user');
+    Route::get('/master-role', [Controller::class, 'MasterRolesIndex'])->name('master-role');
 
     Route::get('/transaksi', function () {
         return view('admin.pages.transaksi');

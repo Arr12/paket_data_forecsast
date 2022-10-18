@@ -16,9 +16,9 @@ class TStok extends Migration
         Schema::create('t_stok', function (Blueprint $table) {
             $table->id();
             $table->string('id_barang');
-            $table->double('in_stock', 15, 8);
-            $table->double('out_stock', 15, 8);
-            $table->double('sisa', 15, 8);
+            $table->double('in_stock', 6, 2);
+            $table->double('out_stock', 6, 2);
+            $table->double('sisa', 6, 2);
             $table->enum('status', ['actived', 'deleted'])->default('actived');
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ class TStok extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('t_stok');
     }
 }

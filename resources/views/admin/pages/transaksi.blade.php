@@ -41,7 +41,7 @@
                     "<table id='"+ name +"' class='table table-bordered table-striped table-hover'></table>"
                 );
                 $("#" + total).html(json.property[0].total);
-                console.log(json.property[0]);
+                // console.log(json.property[0]);
                 $('#' + name).DataTable(json);
                 let arr = [];
                 for (let i = 1; i < json.columns.length; i++) {
@@ -148,15 +148,17 @@
                     else{
                         var name = $("#paket_data_select").val();
                         name = name.split(",");
+                        name = name[0];
                         var nominal = $("#nominal_paket_data").val();
                         var qty = $("#qty_paket_data").val();
                     }
+                    console.log(name);
                     $.ajax({
                         url: "{{route('api.transaction.post-transaction')}}",
                         type: 'POST',
                         data: {
                             "_token": "{{ csrf_token() }}",
-                            "name" : name[0],
+                            "name" : name,
                             "qty" : qty,
                             "sell_price" : nominal,
                             "type" : type,

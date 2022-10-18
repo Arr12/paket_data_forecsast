@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\DataProviderModel;
 use App\Models\DataBarangModel;
 use App\Models\User;
+use Session;
 
 class Controller extends BaseController
 {
@@ -32,6 +33,10 @@ class Controller extends BaseController
             }
         }
         return $format;
+    }
+    public function rupiah($angka){
+        $hasil_rupiah = "Rp " . number_format($angka,2,',','.');
+        return $hasil_rupiah;
     }
     public function ForecastingIndex(){
         $months = [
@@ -114,12 +119,12 @@ class Controller extends BaseController
     }
     public function DeleteProvider(Request $request){
         $id = $request->input('id');
-        $saved_data = [];
-        array_push($saved_data, [
+        $saved_data = [
             'status' => 'deleted',
             'updated_at' => date('Y-m-d H:i:s')
-        ]);
-        DataProviderModel::update($saved_data)->where('id', '=', $id);
+        ];
+        $provider = DataProviderModel::where('id', $id);
+        $provider->update($saved_data);
         return ResponseFormater::success(null, "Success", 200);
     }
 
@@ -184,6 +189,18 @@ class Controller extends BaseController
     }
 
     public function MasterUserIndex(){
-        return view('admin.pages.data-master.user');
+        if(Session::get('roles') === 'Administrator'){
+            return view('admin.pages.data-master.user');
+        } else {
+            return redirect(route('dashboard'));
+        }
+    }
+
+    public function MasterRolesIndex(){
+        if(Session::get('roles') === 'Administrator'){
+            return view('admin.pages.data-master.roles');
+        } else {
+            return redirect(route('dashboard'));
+        }
     }
 }

@@ -98,7 +98,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '{{$delete_data}}'+'?id='+id,
+                        url: "{{route('api.forecasting.delete-provider')}}"+"?id="+id,
                         type: 'POST',
                         success: function(){
                             Swal.fire(
@@ -106,6 +106,7 @@
                                 'Data telah dihapus.',
                                 'success'
                             );
+                            TabelForecast('{{$get_data}}');
                         },
                         error: function(){
                             Swal.fire({

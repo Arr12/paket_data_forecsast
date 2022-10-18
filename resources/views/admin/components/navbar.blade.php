@@ -52,11 +52,21 @@
                                 <span>Master Barang</span>
                             </a>
                         </li>
-                        <li class={{ set_active('master-user') }}>
-                            <a href="{{route('master-user')}}">
-                                <span>Master User</span>
-                            </a>
-                        </li>
+                        @php
+                            $roles = Session::get('roles');
+                        @endphp
+                        @if($roles === 'Administrator')
+                            <li class={{ set_active('master-user') }}>
+                                <a href="{{route('master-user')}}">
+                                    <span>Master User</span>
+                                </a>
+                            </li>
+                            <li class={{ set_active('master-role') }}>
+                                <a href="{{route('master-role')}}">
+                                    <span>Master Roles</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
                 <li class={{ set_active('transaksi') }}>

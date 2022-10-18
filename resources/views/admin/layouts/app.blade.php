@@ -219,6 +219,7 @@
     <script src="/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
     <script src="/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
     <script src="/plugins/sweetalert2/package/dist/sweetalert2.all.min.js"></script>
+    <script src="/js/helpers.js"></script>
 
     @stack('after-script')
 </body>

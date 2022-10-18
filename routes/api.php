@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ForecastingController;
 use App\Http\Controllers\TransactionsController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\PemesananController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +39,16 @@ Route::prefix('/transaction')->name('api.transaction.')->group(function(){
     Route::post('/post-transaction-detail', [TransactionsController::class, 'PostTransaction'])->name('post-transaction-detail');
     Route::post('/delete-transaction', [TransactionsController::class, 'DeleteTransaction'])->name('delete-transaction');
 });
+Route::prefix('/pemesanan')->name('api.pemesanan.')->group(function(){
+    Route::get('/get-pemesanan', [PemesananController::class, 'show'])->name('get-pemesanan');
+    Route::post('/post-pemesanan', [PemesananController::class, 'store'])->name('post-pemesanan');
+    Route::post('/delete-pemesanan', [PemesananController::class, 'destroy'])->name('delete-pemesanan');
+});
+Route::prefix('/stock')->name('api.stock.')->group(function(){
+    Route::get('/get-stock', [StockController::class, 'show'])->name('get-stock');
+    Route::post('/post-stock', [StockController::class, 'store'])->name('post-stock');
+    Route::post('/delete-stock', [StockController::class, 'destroy'])->name('delete-stock');
+});
 Route::prefix('/data-master')->name('api.forecasting.')->group(function(){
     Route::get('/get-provider', [Controller::class, 'DataProvider'])->name('get-provider');
     Route::post('/post-provider', [Controller::class, 'PostProvider'])->name('post-provider');
@@ -42,5 +56,12 @@ Route::prefix('/data-master')->name('api.forecasting.')->group(function(){
     Route::get('/get-barang', [Controller::class, 'DataBarang'])->name('get-barang');
     Route::post('/post-barang', [Controller::class, 'PostBarang'])->name('post-barang');
     Route::post('/delete-barang', [Controller::class, 'DeleteBarang'])->name('delete-barang');
-    Route::get('/get-user', [Controller::class, 'DataUser'])->name('get-user');
+    Route::get('/get-user', [UserController::class, 'show'])->name('get-user');
+    Route::post('/post-user', [UserController::class, 'store'])->name('post-user');
+    Route::post('/delete-user', [UserController::class, 'destroy'])->name('delete-user');
+    Route::post('/update-user', [UserController::class, 'update'])->name('update-user');
+    Route::get('/get-roles', [RoleController::class, 'show'])->name('get-roles');
+    Route::post('/post-roles', [RoleController::class, 'store'])->name('post-roles');
+    Route::post('/delete-roles', [RoleController::class, 'destroy'])->name('delete-roles');
+    Route::post('/update-roles', [RoleController::class, 'update'])->name('update-roles');
 });

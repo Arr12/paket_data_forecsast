@@ -35,12 +35,12 @@ class TransactionsController extends Controller
                 $key + 1,
                 $value->name,
                 $value->qty,
-                $value->sell_price,
-                $value->sell_price*$value->qty,
+                $this->rupiah($value->sell_price),
+                $this->rupiah($value->sell_price*$value->qty),
                 $btn
             ]);
         }
-        array_push($data_array['property'], ['total' => $total]);
+        array_push($data_array['property'], ['total' => $this->rupiah($total)]);
         return $data_array;
     }
     public function DataTransactionSplit(Request $request){
@@ -70,8 +70,8 @@ class TransactionsController extends Controller
                 $key + 1,
                 $value->name,
                 $value->qty,
-                $value->sell_price,
-                $value->sell_price*$value->qty,
+                $this->rupiah($value->sell_price),
+                $this->rupiah($value->sell_price*$value->qty),
                 $btn
             ]);
         }
