@@ -33,6 +33,9 @@ Route::prefix('/laporan')->name('api.laporan.')->group(function(){
 });
 Route::prefix('/transaction')->name('api.transaction.')->group(function(){
     Route::get('/get-transaction', [TransactionsController::class, 'DataTransaction'])->name('get-transaction');
+    Route::get('/transaction-day', [TransactionsController::class, 'DataTransaction'])->name('transaction-day');
+    Route::get('/transaction-month', [TransactionsController::class, 'DataTransaction'])->name('transaction-month');
+    Route::get('/transaction-year', [TransactionsController::class, 'DataTransaction'])->name('transaction-year');
     Route::get('/get-transaction-split', [TransactionsController::class, 'DataTransactionSplit'])->name('get-transaction-split');
     Route::post('/split-transaction', [TransactionsController::class, 'UpdateTransaction'])->name('post-split-transaction');
     Route::post('/post-transaction', [TransactionsController::class, 'PostTransaction'])->name('post-transaction');
