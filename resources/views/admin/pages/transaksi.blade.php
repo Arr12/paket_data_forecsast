@@ -118,7 +118,7 @@
                 type: 'GET',
                 dataType: 'json',
                 success: function(json) {
-                    paket_data += "<label for='paket_data_select'>Paket Data</label><select type='text' id='paket_data_select'><option value=''>Pilih Paket Data</option>";
+                    paket_data += "<label for='paket_data_select'>Paket Data & Barang</label><select type='text' id='paket_data_select'><option value=''>Pilih Paket Data & Barang</option>";
                     json.data.map(function(val, index){
                         paket_data += "<option value='"+ val[2] +","+ val[5] +"'>"+ val[2] +"</option>";
                     });
@@ -143,7 +143,7 @@
                     if(type === 'pulsa'){
                         var name = $("#no_hp").val() + " (" + $("#provider_select").val() + ")";
                         var nominal = $("#nominal").val();
-                        var qty = 1;
+                        var qty = nominal;
                     }
                     else{
                         var name = $("#paket_data_select").val();
@@ -152,7 +152,6 @@
                         var nominal = $("#nominal_paket_data").val();
                         var qty = $("#qty_paket_data").val();
                     }
-                    console.log(name);
                     $.ajax({
                         url: "{{route('api.transaction.post-transaction')}}",
                         type: 'POST',
@@ -165,8 +164,12 @@
                         },
                         dataType: 'json',
                         success: function(result){
-                            Swal.fire('Saved!', '', 'success');
-                            Tabel("{{route('api.transaction.get-transaction')}}", 'transaction');
+                            if(result.meta.status === 'failure_stock'){
+                                Swal.fire('Unsaved!', 'Please Check Stock and Try Again', 'error');
+                            } else {
+                                Swal.fire('Saved!', '', 'success');
+                                Tabel("{{route('api.transaction.get-transaction')}}", 'transaction');
+                            }
                         }
                     });
                 }
@@ -199,7 +202,6 @@
         $(document).on('click', '#split_transaction', function(){
             var id = $(this).attr("data-id");
             var type = $(this).attr("data-type");
-            console.log(type);
             $.ajax({
                 url: "{{route('api.transaction.post-split-transaction')}}",
                 type: 'POST',
@@ -217,18 +219,25 @@
             });
         });
         $(document).on('click', '#btn_done_transaction', function(){
-            $.ajax({
-                url: "{{ route('api.transaction.post-transaction-detail') }}",
-                type: 'POST',
-                data: {
-                    "_token" : "{{ csrf_token() }}",
-                    "id" : id,
-                },
-                dataType: 'json',
-                success: function(json){
-                    Swal.fire('Splited!', '', 'success');
-                    Tabel("{{route('api.transaction.get-transaction')}}", 'transaction');
-                    Tabel("{{route('api.transaction.get-transaction-split')}}", 'split');
+            Swal.fire({
+                title: 'Do you want to complete all the changes?',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('api.transaction.post-transaction-detail') }}",
+                        type: 'POST',
+                        data: {
+                            "_token" : "{{ csrf_token() }}",
+                        },
+                        dataType: 'json',
+                        success: function(json){
+                            Swal.fire('Done!', '', 'success');
+                            Tabel("{{route('api.transaction.get-transaction')}}", 'transaction');
+                            Tabel("{{route('api.transaction.get-transaction-split')}}", 'split');
+                        }
+                    });
                 }
             });
         });
@@ -272,7 +281,7 @@
                                     <i class="material-icons">save</i>
                                 </div>
                                 <div class="content">
-                                    <div class="text">Paket Data</div>
+                                    <div class="text">Paket Data atau Barang</div>
                                 </div>
                             </div>
                         </a>

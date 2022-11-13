@@ -73,8 +73,32 @@
                     success: function(json) {
                         $('#DoReport').removeAttr('disabled', 'disabled');
                         TabelForecast(url_dx);
+                        console.log(json);
                         var label = [];
-                        var dataSets = [];
+                        var value = [];
+                        var date_start = new Date($("#SDateA").val());
+                        var date_end = new Date($("#SDateB").val());
+                        for(var d = new Date($("#SDateA").val()); d <= date_end; d.setDate(d.getDate() + 1)){
+                            // console.log(new Date(d));
+                            label.push(formatDateYMD(new Date(d)));
+                        }
+                        // console.log(label);
+                        // console.log(result.value[i]);
+                        // console.log(result.year[i]);
+                        for(var j = 0; j < label.length; j++){
+                            var x = 0;
+                            json.data.map((v, i) => {
+                                // console.log(v[6]);
+                                if(v[6] === formatDateYMD(label[j])){
+                                    var nominal = v[4].replace('Rp ', '');
+                                    // var nominal2 = nominal.replace(',', '');
+                                    var nominal3 = nominal.replace('.', '');
+                                    x += parseInt(nominal3);
+                                }
+                            });
+                            value.push(x);
+                        }
+                        console.log(value);
                         var ctx = document.getElementById('chart-bars');
                         var myChart = new Chart(ctx, {
                             type: 'bar',
@@ -82,7 +106,7 @@
                                 labels: label,
                                 datasets: [{
                                     label: 'Pendapatan Terakhir',
-                                    data: dataSets,
+                                    data: value,
                                     backgroundColor: [
                                         'rgba(255, 99, 132, 0.2)',
                                         'rgba(54, 162, 235, 0.2)',
@@ -136,7 +160,7 @@
                             </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <button class="btn btn-primary btn-block waves-effect" data-href="{{route('api.laporanget-laporan')}}"
+                            <button class="btn btn-primary btn-block waves-effect" data-href="{{route('api.laporan.get-laporan')}}"
                                 id="DoReport">
                                 <i class="material-icons">done</i> Show Report
                             </button>
@@ -148,7 +172,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="card">
                 <div class="header">
-                    <h2>Laporan Bulanan</h2>
+                    <h2>Laporan By Date</h2>
                 </div>
                 <div class="body">
                     <div class="chart">
@@ -161,34 +185,6 @@
                         </div>
                     </div>
                     <div class="table-responsive" id="FormTabelForecast"></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="header">
-                    <h2>Laporan Mingguan</h2>
-                </div>
-                <div class="body">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <p>Hide column:</p>
-                            <div id="data-column"></div>
-                        </div>
-                    </div>
-                    <div class="table-responsive" id="FormTabelForecastMingguan"></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="header">
-                    <h2>Laporan Harian</h2>
-                </div>
-                <div class="body">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <p>Hide column:</p>
-                            <div id="data-column"></div>
-                        </div>
-                    </div>
-                    <div class="table-responsive" id="FormTabelForecastHarian"></div>
                 </div>
             </div>
         </div>

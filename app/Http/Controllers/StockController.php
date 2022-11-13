@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Stock;
 use App\Models\DatabarangModel;
+use App\Models\DataProviderModel;
 use Illuminate\Http\Request;
 
 class StockController extends Controller
@@ -68,6 +69,7 @@ class StockController extends Controller
     public function show(Request $request)
     {
         $barang = DataBarangModel::where('status', 'actived')->orderBy('id', 'desc')->get();
+        $provider = DataProviderModel::where('status', 'actived')->orderBy('id', 'desc')->get();
         $data_array['columns'] = [];
         $data_array['data'] = [];
         $title = [
@@ -75,28 +77,58 @@ class StockController extends Controller
             "Name",
             "In",
             "Out",
+            "Type",
+            "Total",
         ];
         foreach ($title as $key => $value) {
             array_push($data_array['columns'], ["title" => $value]);
         }
-        $in_stock = 0;
-        $out_stock = 0;
         foreach ($barang as $key => $value) {
-            $data = Stock::where('status', 'actived')->where('id_barang', $value->id_barang)->orderBy('id', 'desc')->get();
-            foreach ($data as $key => $value) {
-                $stock += ($value->sisa - $value->out_stock);
-                if($value->in_stock != 0){
-                    $in_stock += $value->in_stock;
-                } else {
-                    $out_stock += $value->out_stock;
+            $in_stock = 0;
+            $out_stock = 0;
+            $total = 0;
+            $data = Stock::where('status', 'actived')->where('type', 'paket_data')->where('id_barang', $value->id)->orderBy('id', 'desc')->get();
+            if(count($data) != 0){
+                foreach ($data as $key2 => $value2) {
+                    // $stock += ($value->sisa - $value->out_stock);
+                    if($value2->in_stock != 0){
+                        $in_stock += $value2->in_stock;
+                    } else {
+                        $out_stock += $value2->out_stock;
+                    }
+                    $total = $in_stock - $out_stock;
                 }
+                array_push($data_array['data'], [
+                    $key + 1,
+                    $value->name,
+                    $in_stock,
+                    $out_stock,
+                    'Paket Data',
+                    $total
+                ]);
             }
-            array_push($data_array['data'], [
-                $key + 1,
-                $value->name,
-                $in_stock,
-                $out_stock
-            ]);
+        }
+        foreach ($provider as $key => $value) {
+            $data = Stock::where('status', 'actived')->where('type', 'pulsa')->where('id_barang', $value->id)->orderBy('id', 'desc')->get();
+            if(count($data) != 0){
+                foreach ($data as $key2 => $value2) {
+                    // $stock += ($value->sisa - $value->out_stock);
+                    if($value2->in_stock != 0){
+                        $in_stock += $value2->in_stock;
+                    } else {
+                        $out_stock += $value2->out_stock;
+                    }
+                    $total = $in_stock - $out_stock;
+                }
+                array_push($data_array['data'], [
+                    $key + 1,
+                    $value->name,
+                    $in_stock,
+                    $out_stock,
+                    'Pulsa',
+                    $total
+                ]);
+            }
         }
         if (!$data) {
             return response()->json([
@@ -109,7 +141,7 @@ class StockController extends Controller
                 'status' => 'success',
                 'message' => null
             ],
-            'data' => $data
+            'data' => $data_array
         ], 200);
     }
 

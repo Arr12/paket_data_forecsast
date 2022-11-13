@@ -65,16 +65,39 @@
     $(document).ready(function() {
         $('#FormTabel').html(createSkeleton(1));
         TabelForecast('{{$get_data}}');
+        var provider = '';
+        $.ajax({
+            url: "{{route('api.forecasting.get-provider')}}",
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                provider += "<label for='provider_select'>Provider</label><select type='text' id='provider_select'><option value=''>Pilih Provider</option>";
+                json.data.map(function(val, index){
+                    provider += "<option value='"+ val[1] +"'>"+ val[2] +"</option>";
+                });
+                provider += "</select>";
+                $("#provider").html(provider);
+                $("#provider_select").addClass("form-control");
+            }
+        });
         $(document).on('click', '#btn_add_data', function() {
             if ($("#name").val() != '') {
                 $(this).attr('disabled', 'disabled');
                 $('#FormTabel').html(createSkeleton(1));
-                let url_dx = $(this).attr('data-href');
                 $.ajax({
-                    url: url_dx,
+                    url: "{{ route('api.forecasting.post-barang') }}",
+                    dataType: 'json',
+                    method: 'post',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "name" : $("#name").val(),
+                        "buy_price" : $("#buy_price").val(),
+                        "sell_price" : $("#sell_price").val(),
+                        "id_provider" : $("#provider_select").val()
+                    },
                     success: function(json) {
                         $('#btn_add_data').removeAttr('disabled', 'disabled');
-                        TabelForecast(url_dx);
+                        TabelForecast('{{$get_data}}');
                     },
                     error: function() {
                         $('#btn_add_data').removeAttr('disabled', 'disabled');
@@ -136,9 +159,9 @@
                         <label for="name">Nama Barang</label>
                         <input type="text" id="name" class="form-control" placeholder="Ketik nama provider" />
                     </div>
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="provider">
                         <label for="provider">Provider</label>
-                        <select id="provider" class="form-control">
+                        <select class="form-control">
                             <option value="">Pilih Provider</option>
                         </select>
                     </div>

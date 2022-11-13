@@ -33,18 +33,21 @@ Route::prefix('/laporan')->name('api.laporan.')->group(function(){
 });
 Route::prefix('/transaction')->name('api.transaction.')->group(function(){
     Route::get('/get-transaction', [TransactionsController::class, 'DataTransaction'])->name('get-transaction');
-    Route::get('/transaction-day', [TransactionsController::class, 'DataTransaction'])->name('transaction-day');
-    Route::get('/transaction-month', [TransactionsController::class, 'DataTransaction'])->name('transaction-month');
-    Route::get('/transaction-year', [TransactionsController::class, 'DataTransaction'])->name('transaction-year');
+    Route::get('/transaction-day', [TransactionsController::class, 'DataTransactionDay'])->name('transaction-day');
+    Route::get('/transaction-month', [TransactionsController::class, 'DataTransactionMonth'])->name('transaction-month');
+    Route::get('/transaction-year', [TransactionsController::class, 'DataTransactionYear'])->name('transaction-year');
+    Route::get('/transaction-peryear', [TransactionsController::class, 'DataTransactionPerYear'])->name('transaction-peryear');
     Route::get('/get-transaction-split', [TransactionsController::class, 'DataTransactionSplit'])->name('get-transaction-split');
     Route::post('/split-transaction', [TransactionsController::class, 'UpdateTransaction'])->name('post-split-transaction');
     Route::post('/post-transaction', [TransactionsController::class, 'PostTransaction'])->name('post-transaction');
-    Route::post('/post-transaction-detail', [TransactionsController::class, 'PostTransaction'])->name('post-transaction-detail');
+    Route::post('/post-transaction-detail', [TransactionsController::class, 'PostTransactionDetail'])->name('post-transaction-detail');
     Route::post('/delete-transaction', [TransactionsController::class, 'DeleteTransaction'])->name('delete-transaction');
 });
 Route::prefix('/pemesanan')->name('api.pemesanan.')->group(function(){
     Route::get('/get-pemesanan', [PemesananController::class, 'show'])->name('get-pemesanan');
     Route::post('/post-pemesanan', [PemesananController::class, 'store'])->name('post-pemesanan');
+    Route::post('/update-pemesanan', [PemesananController::class, 'update'])->name('update-pemesanan');
+    Route::post('/done-pemesanan', [PemesananController::class, 'done'])->name('done-pemesanan');
     Route::post('/delete-pemesanan', [PemesananController::class, 'destroy'])->name('delete-pemesanan');
 });
 Route::prefix('/stock')->name('api.stock.')->group(function(){

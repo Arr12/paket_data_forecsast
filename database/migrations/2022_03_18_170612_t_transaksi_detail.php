@@ -16,7 +16,7 @@ class TTransaksiDetail extends Migration
         Schema::create('t_transaksi_detail', function (Blueprint $table) {
             $table->id();
             $table->string('no_kwitansi');
-            $table->double('grand_total', 15, 8);
+            $table->double('grand_total', 20, 2);
             $table->enum('status', ['actived', 'deleted', 'done'])->default('actived');
             $table->timestamps();
         });

@@ -16,9 +16,9 @@ class TPemesanan extends Migration
         Schema::create('t_pemesanan', function (Blueprint $table) {
             $table->id();
             $table->string('id_barang');
-            $table->double('qty', 15, 2);
-            $table->double('buy_price', 15, 2);
-            $table->double('sell_price', 15, 2);
+            $table->double('qty', 20, 2);
+            $table->double('buy_price', 20, 2);
+            $table->double('sell_price', 20, 2);
             $table->integer('details_id');
             $table->enum('status', ['actived', 'deleted'])->default('actived');
             $table->timestamps();

@@ -14,4 +14,7 @@ class DataBarangModel extends Model
     public function Provider(){
         return $this->belongsTo(DataProviderModel::class, "id_provider", "id");
     }
+    public function stock(){
+        return $this->belongsTo(DataBarangModel::class, "id_barang", "id");
+    }
 }

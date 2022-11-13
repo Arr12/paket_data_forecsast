@@ -21,15 +21,16 @@ class Controller extends BaseController
         $format = $today.'00001';
         if($counter != 0){
             foreach ($data as $key => $value) {
-                $lastInvoice = $value->id;
-                $lastDate = substr($lastInvoice, 0, 8);
-                $lastNoUrut = substr($lastInvoice, 8, 5);
+                $lastInvoice = $value->no_kwitansi;
+                $lastDate = substr($lastInvoice, 0, 18);
+                $lastNoUrut = substr($lastInvoice, 17, 5);
                 $nextNoUrut = $lastNoUrut;
                 $format = $lastDate.$nextNoUrut;
                 if($status != 'before'){
                     $nextNoUrut = $lastNoUrut + 1;
-                    $format = $today.sprintf('%04s', $nextNoUrut);
+                    $format = $today.sprintf('%05s', $nextNoUrut);
                 }
+                // dd($lastInvoice, $lastDate, $lastNoUrut, $format);
             }
         }
         return $format;
@@ -172,9 +173,15 @@ class Controller extends BaseController
     }
     public function PostBarang(Request $request){
         $name = $request->input('name');
+        $id_provider = $request->input('id_provider');
+        $buy_price = $request->input('buy_price');
+        $sell_price = $request->input('sell_price');
         $saved_data = [];
         array_push($saved_data, [
             'name' => $name,
+            'id_provider' => $id_provider,
+            'buy_price' => $buy_price,
+            'sell_price' => $sell_price,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ]);
