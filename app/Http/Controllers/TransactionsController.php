@@ -7,7 +7,7 @@ use App\Models\TransactionsModel;
 use App\Models\TransactionDetailsModel;
 use App\Models\DataBarangModel;
 use App\Models\Stock;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class TransactionsController extends Controller
 {
@@ -56,7 +56,7 @@ class TransactionsController extends Controller
     }
     public function DataTransactionYear()
     {
-        $query = TransactionsModel::where('status', '=', 'actived')->where(DB::raw('YEAR(created_at)'), date('Y'))->orderBy('id', 'asc')->get();
+        $query = TransactionsModel::where('status', '=', 'done')->where(DB::raw('YEAR(created_at)'), date('Y'))->orderBy('id', 'asc')->get();
         $total = 0;
         foreach ($query as $key => $value) {
             $total += $value->sell_price * $value->qty;
@@ -65,7 +65,7 @@ class TransactionsController extends Controller
     }
     public function DataTransactionMonth()
     {
-        $query = TransactionsModel::where('status', '=', 'actived')->where(DB::raw('MONTH(created_at)'), date('m'))->orderBy('id', 'asc')->get();
+        $query = TransactionsModel::where('status', '=', 'done')->where(DB::raw('MONTH(created_at)'), date('m'))->orderBy('id', 'asc')->get();
         $total = 0;
         foreach ($query as $key => $value) {
             $total += $value->sell_price * $value->qty;
@@ -74,7 +74,7 @@ class TransactionsController extends Controller
     }
     public function DataTransactionDay()
     {
-        $query = TransactionsModel::where('status', '=', 'actived')->where(DB::raw('created_at'), date('Y-m-d'))->orderBy('id', 'asc')->get();
+        $query = TransactionsModel::where('status', '=', 'done')->where(DB::raw('created_at'), date('Y-m-d'))->orderBy('id', 'asc')->get();
         $total = 0;
         foreach ($query as $key => $value) {
             $total += $value->sell_price * $value->qty;
@@ -83,7 +83,7 @@ class TransactionsController extends Controller
     }
     public function DataTransactionPerYear()
     {
-        $query = TransactionsModel::where('status', '=', 'actived')->where(DB::raw('YEAR(created_at)'), date('Y'))->orderBy('id', 'asc')->get();
+        $query = TransactionsModel::where('status', '=', 'done')->where(DB::raw('YEAR(created_at)'), date('Y'))->orderBy('id', 'asc')->get();
         $total = [
             'year' => [],
             'value' => []

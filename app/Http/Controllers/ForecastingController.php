@@ -161,9 +161,9 @@ class ForecastingController extends Controller
         $title3 = [
             "Pmk Min",
             "Pmk Max",
-            "Mean",
-            "Median",
-            "Dibeli",
+            // "Mean",
+            // "Median",
+            "Hasil",
         ];
         foreach ($title3 as $key => $value) {
             array_push($data_array['columns'], ["title" => $value]);
@@ -181,8 +181,9 @@ class ForecastingController extends Controller
             foreach ($forecast_date_arr['types'] as $key2 => $type){
                 foreach ($forecast_date_arr['date'] as $key3 => $value) {
                     if($type === 'day'){
-                        $date = $value;
-                        $stocks = Stock::where('id_barang', '=', $barang->id)->where('created_at', $date)->get();
+                        $date = [date('Y-m-d H:i:s', strtotime('-1 day', strtotime($value))), date('Y-m-d H:i:s', strtotime('+1 day', strtotime($value)))];
+                        $stocks = Stock::where('id_barang', '=', $barang->id)->whereBetween('created_at', $date)->get();
+                        // dump($forecast_date_arr['date'], $date, $stocks);
                     }
                     else {
                         $date = [$value, $forecast_date_arr['enddate'][$key3]];
@@ -199,6 +200,7 @@ class ForecastingController extends Controller
                     array_push($val_out, $keluar);
                 }
             }
+            // dd($stocks);
 
             // menentukan minimum maximum dan mean
             $pem_min = min($val_out);
@@ -207,7 +209,7 @@ class ForecastingController extends Controller
             array_push($dummy, $pem_max);
             $jangkauan = (max($val_out) - min($val_out));
             $mean = array_sum($val_out)/count($val_out);
-            array_push($dummy, $mean);
+            // array_push($dummy, $mean);
 
             // menentukan median
             $length = count($val_out);

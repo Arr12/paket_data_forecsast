@@ -167,7 +167,7 @@
     $data_forecasting = route('api.forecasting.get');
     @endphp
     <div class="block-header">
-        <h2>Foracasting</h2>
+        <h2>Forecasting Pembelian</h2>
     </div>
     <div class="row clearfix">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">

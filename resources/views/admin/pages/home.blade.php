@@ -31,6 +31,7 @@
     $.ajax({
         url: "{{route('api.transaction.transaction-peryear')}}",
         type: "GET",
+        cache: false,
         dataType: "json",
         success: function(result) {
             var label = [];
