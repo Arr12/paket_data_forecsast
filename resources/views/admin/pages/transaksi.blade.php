@@ -177,6 +177,7 @@
         });
         $(document).on('click', '#delete_transaction', function(){
             var id = $(this).attr('data-id');
+            var type = $(this).attr('data-type-transaction');
             Swal.fire({
                 title: 'Do you want to delete the changes?',
                 showCancelButton: true,
@@ -188,7 +189,8 @@
                         type: 'POST',
                         data: {
                             "_token": "{{ csrf_token() }}",
-                            "id" : id
+                            "id" : id,
+                            "type" : type
                         },
                         dataType: 'json',
                         success: function(json){

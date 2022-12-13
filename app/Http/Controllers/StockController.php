@@ -42,6 +42,7 @@ class StockController extends Controller
             'in_stock' => $request->in_stock,
             'out_stock' => $request->out_stock,
             'sisa' => $request->sisa,
+            'type' => $request->type,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];

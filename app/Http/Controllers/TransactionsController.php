@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TransactionsModel;
 use App\Models\TransactionDetailsModel;
 use App\Models\DataBarangModel;
+use App\Models\DataProviderModel;
 use App\Models\Stock;
 use Illuminate\Support\Facades\DB;
 
@@ -115,7 +116,7 @@ class TransactionsController extends Controller
         foreach ($query as $key => $value) {
             $total += $value->sell_price * $value->qty;
             $btn = "
-                <button class='btn btn-danger' type='button' id='delete_transaction' data-id='$value->id' data-type='delete_back'><i class='material-icons'>delete</i></button>
+                <button class='btn btn-danger' type='button' id='delete_transaction' data-id='$value->id' data-type-transaction='$value->type' data-type='delete_back'><i class='material-icons'>delete</i></button>
                 <button class='btn btn-primary' type='button' id='split_transaction' data-id='$value->id' data-type='split_back'><i class='material-icons'>cached</i></button>
             ";
             array_push($data_array['data'], [
@@ -136,24 +137,32 @@ class TransactionsController extends Controller
         $qty = $request->qty;
         $sell_price = $request->sell_price;
         $name = $request->name;
-        $barang = DataBarangModel::where('name', $name)->where('status', 'actived')->get();
+        if($type === 'pulsa'){
+            $name = explode('(', $name);
+            $name = str_replace(')', '', $name[1]);
+            $barang = DataProviderModel::where('name', $name)->where('status', 'actived')->get();
+        } else {
+            $barang = DataBarangModel::where('name', $name)->where('status', 'actived')->get();
+        }
         foreach ($barang as $key => $valuebarang) {
             $id_barang = $valuebarang->id;
         }
-        $stock = Stock::where('id_barang', $id_barang)->where('status', 'actived')->where('type', $type)->orderBy('id', 'desc')->limit(1)->get();
-        // dd($stock);
-        // jika jumlah stock adalah tersedia maka ambil nilai sisa
-        $sisa = 0;
-        if(count($stock) != 0){
-            foreach ($stock as $key => $valuestock) {
-                $sisa = $valuestock->sisa;
+        if($id_barang){
+            $stock = Stock::where('id_barang', $id_barang)->where('status', 'actived')->where('type', $type)->orderBy('id', 'desc')->limit(1)->get();
+            // dd($stock);
+            // jika jumlah stock adalah tersedia maka ambil nilai sisa
+            $sisa = 0;
+            if(count($stock) != 0){
+                foreach ($stock as $key => $valuestock) {
+                    $sisa = $valuestock->sisa;
+                }
             }
-        }
-        if($sisa <= 0){
-            return response()->json(['meta' => [
-                'status' => 'failure_stock',
-                'message' => null
-            ]], 200);
+            if($sisa <= 0){
+                return response()->json(['meta' => [
+                    'status' => 'failure_stock',
+                    'message' => null
+                ]], 200);
+            }
         }
         $sisa = $sisa - $qty;
         $saved_data = [];
@@ -183,16 +192,32 @@ class TransactionsController extends Controller
     }
     public function DeleteTransaction(Request $request){
         $id = $request->id;
-        try {
-            $saved_data = [
-                'status' => 'deleted',
-                'updated_at' => date('Y-m-d H:i:s')
-            ];
-            TransactionsModel::where('id', '=', $id)->update($saved_data);
-            return true;
-        } catch (\Throwable $th) {
-            return false;
+        $saved_data = [
+            'status' => 'deleted',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+        $data = TransactionsModel::where('id', '=', $id)->get();
+        foreach($data as $key => $value){
+            $id_barang = $value->id_barang;
+            $type = $value->type;
+            $name = $value->name;
+            if($type === 'pulsa'){
+                $barang = DataProviderModel::where('name', $name)->where('status', 'actived')->get();
+            } else {
+                $barang = DataBarangModel::where('name', $name)->where('status', 'actived')->get();
+            }
+            foreach ($barang as $key => $valuebarang) {
+                $id_barang = $valuebarang->id;
+            }
         }
+        // dd($id_barang, $type);
+        if($id_barang){
+            $data_x = Stock::where('type', $type)->where('id_barang', $id_barang)->orderBy('id', 'desc')->first();
+            // dd($data_x, $saved_data);
+            $data_x->update($saved_data);
+            TransactionsModel::where('id', '=', $id)->first()->update($saved_data);
+        }
+        return true;
     }
     public function UpdateTransaction(Request $request){
         $id = $request->id;

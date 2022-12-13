@@ -126,6 +126,7 @@
                                 'Data telah dihapus.',
                                 'success'
                             );
+                            TabelForecast('{{$get_data}}');
                         },
                         error: function(){
                             Swal.fire({

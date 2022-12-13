@@ -189,9 +189,13 @@ class Controller extends BaseController
         return ResponseFormater::success(null, "Success", 200);
     }
     public function DeleteBarang(Request $request){
-        $id = $request->input('id');
         $status = 'deleted';
-        DataBarangModel::update('status',$status)->where('id',$id);
+        $saved_data = [
+            'status' => 'deleted',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+        $data = DataBarangModel::where('id', $request->input('id'));
+        $data->update($saved_data);
         return ResponseFormater::success(null, "Success", 200);
     }
 
