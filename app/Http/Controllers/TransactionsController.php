@@ -60,7 +60,11 @@ class TransactionsController extends Controller
         $query = TransactionsModel::where('status', '=', 'done')->where(DB::raw('YEAR(created_at)'), date('Y'))->orderBy('id', 'asc')->get();
         $total = 0;
         foreach ($query as $key => $value) {
-            $total += $value->sell_price * $value->qty;
+            if($value->type === 'pulsa'){
+                $total += $value->sell_price;
+            } else {
+                $total += $value->sell_price * $value->qty;
+            }
         }
         return $total;
     }
@@ -69,7 +73,11 @@ class TransactionsController extends Controller
         $query = TransactionsModel::where('status', '=', 'done')->where(DB::raw('MONTH(created_at)'), date('m'))->orderBy('id', 'asc')->get();
         $total = 0;
         foreach ($query as $key => $value) {
-            $total += $value->sell_price * $value->qty;
+            if($value->type === 'pulsa'){
+                $total += $value->sell_price;
+            } else {
+                $total += $value->sell_price * $value->qty;
+            }
         }
         return $total;
     }
@@ -78,7 +86,11 @@ class TransactionsController extends Controller
         $query = TransactionsModel::where('status', '=', 'done')->where(DB::raw('created_at'), date('Y-m-d'))->orderBy('id', 'asc')->get();
         $total = 0;
         foreach ($query as $key => $value) {
-            $total += $value->sell_price * $value->qty;
+            if($value->type === 'pulsa'){
+                $total += $value->sell_price;
+            } else {
+                $total += $value->sell_price * $value->qty;
+            }
         }
         return $total;
     }
