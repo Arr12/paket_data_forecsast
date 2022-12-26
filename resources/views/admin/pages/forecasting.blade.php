@@ -83,13 +83,24 @@
                             label.push('Forecast');
                         }
                     });
+                    v3 = 0;
+                    v4 = 0;
+                    v5 = 0;
+                    v6 = 0;
+                    v11 = 0;
                     json.data.map((v, i) => {
-                        value.push(v[3]);
-                        value.push(v[4]);
-                        value.push(v[5]);
-                        value.push(v[6]);
-                        value.push(v[11]);
+                        v3 += v[3];
+                        v4 += v[4];
+                        v5 += v[5];
+                        v6 += v[6];
+                        v11 += v[11];
                     });
+                    value.push(v3);
+                    value.push(v4);
+                    value.push(v5);
+                    value.push(v6);
+                    value.push(v11);
+                    console.log(value);
                     const ctx = document.getElementById('myChart').getContext('2d');
                     const myChart = new Chart(ctx, {
                         type: 'line',
@@ -139,7 +150,7 @@
                 }
             });
             $(document).on('click', '#DoForecast', function() {
-                console.log($("#typeForecast").val());
+                // console.log($("#typeForecast").val());
                 let date = '';
                 if($("#typeForecast").val() === "day"){
                     date = $("#dateDay").val();

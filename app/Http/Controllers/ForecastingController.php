@@ -91,7 +91,7 @@ class ForecastingController extends Controller
         $date = $request->input('date');
         $type = $request->input('type');
         // hari pengambilan
-        $date_back = 4;
+        $date_back = 3;
         $forecast_date_arr = [
             'types' => [],
             'date' => [],
@@ -116,11 +116,13 @@ class ForecastingController extends Controller
         }
 
         //jika tipe = hari, mundur 3 hari untuk mengambil data d + 1 dan masukkan kedalam array
+
         if($type === 'day'){
-            for($i = 1; $i <= $date_back; $i++){
+            for($i = $date_back; $i >= 1; $i--){
                 array_push($forecast_date_arr['date'], date('Y-m-d', strtotime("-".$i." day", strtotime($date))));
                 array_push($forecast_date_arr['day'], date('D, d-m-Y', strtotime("-".$i." day", strtotime($date))));
             }
+            // dd($forecast_date_arr);
             foreach ($forecast_date_arr['day'] as $value){
                 array_push($data_array['columns'], ["title" => $value]);
             }
@@ -163,12 +165,15 @@ class ForecastingController extends Controller
             "Pmk Max",
             // "Mean",
             // "Median",
-            "Hasil",
+            "Yang Harus Dibeli",
+            "MAPE"
         ];
         foreach ($title3 as $key => $value) {
             array_push($data_array['columns'], ["title" => $value]);
         }
 
+        $total_forecast = 0;
+        $total_pmk = 0;
         //ambil data barang sbg deskripsi
         $barangs = DataBarangModel::with(['Provider'])->where('status','=','actived')->orderBy('id', 'ASC')->get();
         foreach ($barangs as $key => $barang){
@@ -216,7 +221,7 @@ class ForecastingController extends Controller
             $half_length = $length / 2;
             $median_index = (int) $half_length;
             $median = $val_out[$median_index];
-            array_push($dummy, $median);
+            // array_push($dummy, $median);
 
             // menentukan interval min max, panjang interval
             $interval_min = 0;
@@ -311,9 +316,30 @@ class ForecastingController extends Controller
             }
             $sum = ceil(array_sum($summary)/count($summary));
             array_push($output, [date('D, d-m-Y', strtotime('+1 day', strtotime($forecast_date_arr['day'][count($forecast_date_arr['day'])-1]))), '', '', $sum]);
-            // dump($output);
+            // dd($summary);
+
+            // MAPE
+            $actuals = [];
+            for($actual = 0; $actual < count($val_out); $actual++){
+                // $x1 = str_replace("-", "", $val_out[$actual] - $output[$actual][3]);
+                $x1 = str_replace("-", "", $pem_max - $output[$actual][3]);
+                $x2 = ($val_out[$actual] * 100/100);
+                $total_forecast += $sum;
+                $total_pmk += $pem_max;
+                // $MAPE =
+                // dump((float) $x1 . " = " . $x2);
+                if($x1 <= 0 || $x2 <= 0){
+                    $actualtesting = 0;
+                } else {
+                    // dump($x1 . '=' . $x2);
+                    $actualtesting = ($x1 / $x2) / count($val_out);
+                }
+                // dump($x1, $x2, $actualtesting);
+            }
+            // dd($total_pmk - $total_forecast);
 
             array_push($dummy, $sum);
+            array_push($dummy, $actualtesting);
             array_push($data_array['data'], $dummy);
         }
         // dump($data_array);
