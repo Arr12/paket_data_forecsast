@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use App\Models\Roles;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -30,12 +32,18 @@ class LoginController extends Controller
         ];
 
         if (Auth::Attempt($data)) {
-            $roles = Roles::where('id', auth()->user()->id)->get();
-            if(count($roles) != 0){
-                foreach ($roles as $key => $value) {
-                    $name = $value->name;
+            $user = User::where('email', $request->email)->limit(1)->get();
+            if($user){
+                foreach ($user as $key => $value) {
+                    $roles = Roles::where('id', $value->role_id)->get();
+                    if(count($roles) != 0){
+                        foreach ($roles as $key => $value) {
+                            $name = $value->name;
+                        }
+                    }
                 }
             }
+
             Session::put('roles', $name);
             return redirect(route('dashboard'));
         }else{

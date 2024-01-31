@@ -62,18 +62,37 @@
             },
         });
     }
+    let Barang = function() {
+        var barang = '';
+        $.ajax({
+            url: "{{route('api.forecasting.get-barang')}}",
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                barang += "<label for='barang_select'>Barang</label><select type='text' id='barang_select'><option value=''>Pilih Barang</option>";
+                json.data.map(function(val, index){
+                    barang += "<option value='"+ val[2] +"'>"+ val[2] +"</option>";
+                });
+                barang += "</select>";
+                $("#barang").html(barang);
+                $("#barang_select").addClass("form-control");
+            }
+        });
+    }
     $(document).ready(function() {
+        Barang();
         $(document).on('click', '#DoReport', function() {
+            let barang = $("#barang_select").val();
             if ($("#SDateA").val() != '' && $("#SDateB").val() != '') {
                 $(this).attr('disabled', 'disabled');
                 $('#FormTabelForecast').html(createSkeleton(1));
-                let url_dx = $(this).attr('data-href') + "?firstDate=" + $("#SDateA").val() + "&lastDate=" + $("#SDateB").val();
+                let url_dx = $(this).attr('data-href') + "?firstDate=" + $("#SDateA").val() + "&lastDate=" + $("#SDateB").val() + "&barang=" + barang;
                 $.ajax({
                     url: url_dx,
                     success: function(json) {
                         $('#DoReport').removeAttr('disabled', 'disabled');
                         TabelForecast(url_dx);
-                        console.log(json);
+                        // console.log(json);
                         var label = [];
                         var value = [];
                         var date_start = new Date($("#SDateA").val());
@@ -98,8 +117,31 @@
                             });
                             value.push(x);
                         }
-                        console.log(value);
+                        // console.log(value);
                         var ctx = document.getElementById('chart-bars');
+                        var arr_color = [];
+                        var border_color = [];
+                        var rand_color = [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ];
+                        var rand_border = [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ];
+                        for(var c = 0; c < 31; c++){
+                            arr_color.push(rand_color[Math.ceil(Math.random() * 5)]);
+                            border_color.push(rand_border[Math.ceil(Math.random() * 5)]);
+                        }
+                        // console.log(arr_color, border_color, Math.ceil(Math.random() * 5));
                         var myChart = new Chart(ctx, {
                             type: 'bar',
                             data: {
@@ -107,25 +149,11 @@
                                 datasets: [{
                                     label: 'Pendapatan Terakhir',
                                     data: value,
-                                    backgroundColor: [
-                                        'rgba(255, 99, 132, 0.2)',
-                                        'rgba(54, 162, 235, 0.2)',
-                                        'rgba(255, 206, 86, 0.2)',
-                                        'rgba(75, 192, 192, 0.2)',
-                                        'rgba(153, 102, 255, 0.2)',
-                                        'rgba(255, 159, 64, 0.2)'
-                                    ],
-                                    borderColor: [
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)',
-                                        'rgba(75, 192, 192, 1)',
-                                        'rgba(153, 102, 255, 1)',
-                                        'rgba(255, 159, 64, 1)'
-                                    ],
+                                    backgroundColor: arr_color,
+                                    borderColor: border_color,
                                     borderWidth: 1
                                 }]
-                            },
+                            }
                         });
                     },
                     error: function() {
@@ -149,6 +177,7 @@
                 </div>
                 <div class="body">
                     <div class="row clearfix">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="barang"></div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="SDateForm">
                             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                 <label for="SDateA">Dari :</label>

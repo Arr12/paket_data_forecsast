@@ -253,8 +253,12 @@ class TransactionsController extends Controller
     public function DataReport(Request $request){
         $firstDate = $request->input('firstDate');
         $lastDate = $request->input('lastDate');
+        // $firstDate = date('Y-m-d', strtotime('-1 day', strtotime($firstDate)));
+        $lastDate = date('Y-m-d', strtotime('+1 day', strtotime($lastDate)));
+        $barang = $request->input('barang');
         $data_array['columns'] = [];
         $data_array['data'] = [];
+        $data_array['date'] = [$firstDate, $lastDate];
         $title = [
             "No.",
             "Nama",
@@ -262,12 +266,13 @@ class TransactionsController extends Controller
             "Harga",
             "Sub Total",
             "Type",
-            "Tanggal Buat",
+            "Tanggal Transaksi",
         ];
         foreach ($title as $key => $value) {
             array_push($data_array['columns'], ["title" => $value]);
         }
-        $query = TransactionsModel::whereBetween('created_at', [$firstDate, $lastDate])->where('status', 'done')->get();
+        $query = TransactionsModel::where('name', 'like', '%'. $barang . '%')->whereBetween('created_at', [$firstDate, $lastDate])->where('status', 'done')->get();
+        // dd($query, $barang);
         foreach ($query as $key => $value) {
             if($value->type === 'pulsa'){
                 $total = $value->sell_price;

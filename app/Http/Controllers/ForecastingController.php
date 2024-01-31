@@ -90,6 +90,7 @@ class ForecastingController extends Controller
     public function DataForecasting(Request $request){
         $date = $request->input('date');
         $type = $request->input('type');
+
         // hari pengambilan
         $date_back = 3;
         $forecast_date_arr = [
@@ -130,8 +131,9 @@ class ForecastingController extends Controller
 
         //tapi jika tipe = minggu, mundur 3 minggu untuk mengambil data w + 1 dan masukkan kedalam array
         else if ($type === 'week') {
+            $year = $request->input('year');
             $month = $request->input('month');
-            $newDate = date('Y-'.$month.'-d');
+            $newDate = date($year.'-'.$month.'-d');
             $weeklyDate = $this->weekFromDate($newDate);
             $weekDay = collect($weeklyDate['c_week']);
             $weekDay = $weekDay->intersect($date)->toArray();
@@ -149,7 +151,8 @@ class ForecastingController extends Controller
         }
         //jika tipe adalah bulan, mundur 3 bulan untuk mengambil data m + 1 dan masukkan kedalam array
         else{
-            $newDate = date('Y-m-d', strtotime(date('Y-'.$date.'-1')));
+            $year = $request->input('year');
+            $newDate = date('Y-m-d', strtotime(date($year.'-'.$date.'-1')));
             for($i = 1; $i <= $date_back; $i++){
                 array_push($forecast_date_arr['date'], date('Y-m-d', strtotime('-'.$i." month", strtotime($newDate))));
                 array_push($forecast_date_arr['enddate'], date('Y-m-d', strtotime("-".($i - 1)." month", strtotime($newDate))));
@@ -165,7 +168,7 @@ class ForecastingController extends Controller
             "Pmk Max",
             // "Mean",
             // "Median",
-            "Yang Harus Dibeli",
+            "Hasil Prediksi",
             "MAPE"
         ];
         foreach ($title3 as $key => $value) {
@@ -205,7 +208,7 @@ class ForecastingController extends Controller
                     array_push($val_out, $keluar);
                 }
             }
-            // dd($stocks);
+            // dd($stocks, $val_out);
 
             // menentukan minimum maximum dan mean
             $pem_min = min($val_out);
@@ -230,7 +233,7 @@ class ForecastingController extends Controller
             $max_U = $pem_max + $interval_max;
             $jangkauan_U = $max_U - $min_U;
             $panjang_interval = $mean/2;
-            $jumlah_kelas = $panjang_interval === 0 ? $panjang_interval : round($max_U/$panjang_interval);
+            $jumlah_kelas = $panjang_interval === 0 || $panjang_interval === 0.0 ? $panjang_interval : round($max_U/$panjang_interval);
 
             // dump($val_out);
 

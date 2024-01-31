@@ -100,7 +100,7 @@
                     value.push(v5);
                     value.push(v6);
                     value.push(v11);
-                    console.log(value);
+                    // console.log(value);
                     const ctx = document.getElementById('myChart').getContext('2d');
                     const myChart = new Chart(ctx, {
                         type: 'line',
@@ -142,11 +142,13 @@
                     $("#show_week").show();
                     $("#show_month").show();
                     $("#show_date").hide();
+                    $("#show_year").show();
                 }
                 else{
                     $("#show_month").show();
                     $("#show_week").hide();
                     $("#show_date").hide();
+                    $("#show_year").show();
                 }
             });
             $(document).on('click', '#DoForecast', function() {
@@ -159,10 +161,10 @@
                 else if($("#typeForecast").val() === "week"){
                     date = $("#week").val();
                     $("#title_forecast").html(date);
-                    date = date + "&month=" + $("#month").val();
+                    date = date + "&month=" + $("#month").val() + "&year=" + $("#yearForecast").val();
                 }
                 else{
-                    date = $("#month").val();
+                    date = $("#month").val()  + "&year=" + $("#yearForecast").val();
                     $("#title_forecast").html(date);
                 }
                 // console.log(date);
@@ -197,6 +199,17 @@
                                     <option value="week">Mingguan</option>
                                     <option value="month">Bulanan</option>
                                 </select>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="YearForm">
+                                <div class="mt-5" id="show_year" style="display: none;">
+                                    <label for="type">Tahun</label>
+                                    <select id="yearForecast" class="form-control">
+                                        <option value="">Pilih Tahun</option>
+                                        @for ($i = 5; $i >= 0; $i--)
+                                            <option value="{{ date('Y') - $i }}">{{ date('Y') - $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="show_type">
                                 <div class="form-group" id="show_date" style="display:none;">
